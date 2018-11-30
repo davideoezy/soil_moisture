@@ -32,12 +32,13 @@ while True:
     print ts, reading  #print counts using GPIO4 and time
     file.write(str(ts) + " " + str(reading) + "\n") #write data to file
 
-    while (reading < 10.00):
+    while (reading < 0.13):
         time_start = time.time()
         counter = counter + 1
         if counter >= 50:
             break
     time_end = time.time()
+    print counter, (time_end - time_start)
     if (counter >= 25 and (time_end - time_start) <= 60): # if you get 25 measurements that indicate dry soil in less than one minute, need to water
         print('Not enough water for your plants to survive! Please water now.') #comment this out for testing
 #    else:
