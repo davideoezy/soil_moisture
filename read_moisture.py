@@ -41,7 +41,7 @@ while True:
     INSERT INTO soil_moisture
     (read_ts, reading)
     VALUES
-    ({},{})""".format(take_reading[0],take_reading()[1])
+    ({},{})""".format(take_reading()[0],take_reading()[1])
 
     con = mariadb.connect(host = db_host, port = db_host_port, user = db_user, password = db_pass, database = db)
     cur = con.cursor()
