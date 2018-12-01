@@ -2,7 +2,13 @@ import RPi.GPIO as GPIO
 import time
 GPIO.setmode(GPIO.BCM)
 
-file = open("SensorData.txt", "w") #stores data file in same directory as this program file
+#file = open("SensorData.txt", "w") #stores data file in same directory as this program file
+
+db_host = 'hda.amahi.net'
+db_host_port = '3306'
+db_user = 'rpi'
+db_pass = 'warm_me'
+db = 'soil'
 
 #Define function to measure charge time
 def RC_Analog(Pin):
@@ -21,28 +27,30 @@ def RC_Analog(Pin):
 
 
     #Main program loop
-while True:
-    time.sleep(1)
+def take_reading():
     ts = time.time()
     reading = RC_Analog(4) #store counts in a variable
-    counter = 0
-    time_start = 0
-    time_end = 0
+    #counter = 0
+    #time_start = 0
+    #time_end = 0
+    return ts, reading  #return counts using GPIO4 and time
     
-    print ts, reading  #print counts using GPIO4 and time
-    file.write(str(ts) + " " + str(reading) + "\n") #write data to file
+while True:
 
-"""     while (reading < 0.13):
-        time_start = time.time()
-        counter = counter + 1
-        if counter >= 50:
-            break
-    time_end = time.time()
-    print counter, (time_end - time_start)
-    if (counter >= 25 and (time_end - time_start) <= 60): # if you get 25 measurements that indicate dry soil in less than one minute, need to water
-        print('Not enough water for your plants to survive! Please water now.') #comment this out for testing
-#    else:
- #     print('Your plants are safe and healthy, yay!') """
+    insert_stmt = """
+    INSERT INTO soil_moisture
+    (read_ts, reading)
+    VALUES
+    ({},{})""".format(take_reading[0],take_reading()[1])
+
+    con = mariadb.connect(host = db_host, port = db_host_port, user = db_user, password = db_pass, database = db)
+    cur = con.cursor()
+    try:
+        cur.execute(insert_stmt)
+        con.commit()
+    except:
+        con.rollback()
+    con.close()
+    time.sleep(300)
 
 GPIO.cleanup()
-file.close()
