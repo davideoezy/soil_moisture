@@ -10,18 +10,19 @@ db_host_port = '3306'
 db_user = 'rpi'
 db_pass = 'warm_me'
 db = 'soil'
+Pin = 17
 
 #Define function to measure charge time
 def RC_Analog(Pin):
     counter=0
     start_time = time.time()
     #Discharge capacitor
-    GPIO.setup(14, GPIO.OUT)
-    GPIO.output(14, GPIO.LOW)
+    GPIO.setup(Pin, GPIO.OUT)
+    GPIO.output(Pin, GPIO.LOW)
     time.sleep(0.1) #in seconds, suspends execution.
-    GPIO.setup(14, GPIO.IN)
+    GPIO.setup(Pin, GPIO.IN)
 #Count loops until voltage across capacitor reads high on GPIO
-    while (GPIO.input(14)==GPIO.LOW):
+    while (GPIO.input(Pin)==GPIO.LOW):
         counter=counter+1
     end_time = time.time()
     return end_time - start_time
@@ -30,7 +31,7 @@ def RC_Analog(Pin):
     #Main program loop
 def take_reading():
     ts = time.time()
-    reading = RC_Analog(4) #store counts in a variable
+    reading = RC_Analog(Pin) #store counts in a variable
     #counter = 0
     #time_start = 0
     #time_end = 0
