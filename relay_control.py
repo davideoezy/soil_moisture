@@ -5,6 +5,8 @@ import signal
 import sys
 import time
 import smbus
+import mysql.connector as mariadb
+
 
 db_host = 'hda.amahi.net'
 db_host_port = '3306'
