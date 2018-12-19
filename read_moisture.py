@@ -53,6 +53,6 @@ while True:
     except:
         con.rollback()
     con.close()
-    time.sleep(300)
+    time.sleep(600)
 
 GPIO.cleanup()
