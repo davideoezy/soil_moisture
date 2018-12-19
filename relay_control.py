@@ -23,51 +23,10 @@ class Relay():
         self.DEVICE_REG_DATA &= ~(0x1 << 0)
         bus.write_byte_data(self.DEVICE_ADDRESS, self.DEVICE_REG_MODE1, self.DEVICE_REG_DATA)
 
-    def ON_2(self):
-        print('ON_2...')
-        self.DEVICE_REG_DATA &= ~(0x1 << 1)
-        bus.write_byte_data(self.DEVICE_ADDRESS, self.DEVICE_REG_MODE1, self.DEVICE_REG_DATA)
-
-    def ON_3(self):
-        print('ON_3...')
-        self.DEVICE_REG_DATA &= ~(0x1 << 2)
-        bus.write_byte_data(self.DEVICE_ADDRESS, self.DEVICE_REG_MODE1, self.DEVICE_REG_DATA)
-
-    def ON_4(self):
-        print('ON_4...')
-        self.DEVICE_REG_DATA &= ~(0x1 << 3)
-        bus.write_byte_data(self.DEVICE_ADDRESS, self.DEVICE_REG_MODE1, self.DEVICE_REG_DATA)
-
     def OFF_1(self):
         print('OFF_1...')
         self.DEVICE_REG_DATA |= (0x1 << 0)
         bus.write_byte_data(self.DEVICE_ADDRESS, self.DEVICE_REG_MODE1, self.DEVICE_REG_DATA)
-
-    def OFF_2(self):
-        print('OFF_2...')
-        self.DEVICE_REG_DATA |= (0x1 << 1)
-        bus.write_byte_data(self.DEVICE_ADDRESS, self.DEVICE_REG_MODE1, self.DEVICE_REG_DATA)
-
-    def OFF_3(self):
-        print('OFF_3...')
-        self.DEVICE_REG_DATA |= (0x1 << 2)
-        bus.write_byte_data(self.DEVICE_ADDRESS, self.DEVICE_REG_MODE1, self.DEVICE_REG_DATA)
-
-    def OFF_4(self):
-        print('OFF_4...')
-        self.DEVICE_REG_DATA |= (0x1 << 3)
-        bus.write_byte_data(self.DEVICE_ADDRESS, self.DEVICE_REG_MODE1, self.DEVICE_REG_DATA)
-
-    def ALLON(self):
-        print('ALL ON...')
-        self.DEVICE_REG_DATA &= ~(0xf << 0)
-        bus.write_byte_data(self.DEVICE_ADDRESS, self.DEVICE_REG_MODE1, self.DEVICE_REG_DATA)
-
-    def ALLOFF(self):
-        print('ALL OFF...')
-        self.DEVICE_REG_DATA |= (0xf << 0)
-        bus.write_byte_data(self.DEVICE_ADDRESS, self.DEVICE_REG_MODE1, self.DEVICE_REG_DATA)
-
 
 if __name__ == "__main__":
     relay = Relay()
@@ -79,25 +38,10 @@ if __name__ == "__main__":
 
 
     signal.signal(signal.SIGINT, endProcess)
-    while True:
-        ct = raw_input("input: ")
-        if ct == '1on':
-            relay.ON_1()
-        elif ct == '2on':
-            relay.ON_2()
-        elif ct == '3on':
-            relay.ON_3()
-        elif ct == '4on':
-            relay.ON_4()
-        elif ct == '1off':
-            relay.OFF_1()
-        elif ct == '2off':
-            relay.OFF_2()
-        elif ct == '3off':
-            relay.OFF_3()
-        elif ct == '4off':
-            relay.OFF_4()
-        elif ct == 'allon':
-            relay.ALLON()
-        elif ct == 'alloff':
-            relay.ALLOFF()
+
+    relay.ON_1()
+    
+    sleep(10)
+    relay.OFF_1()
+
+
