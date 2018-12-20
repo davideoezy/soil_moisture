@@ -31,21 +31,20 @@ def RC_Analog(Pin):
 
     #Main program loop
 def take_reading():
-    ts = time.time()
     reading_time = RC_Analog(Pin)[1] #store counts in a variable
     reading_count = RC_Analog(Pin)[0]
     #counter = 0
     #time_start = 0
     #time_end = 0
-    return ts, reading_time, reading_counts  #return counts using GPIO4 and time
+    return reading_time, reading_count  #return counts using GPIO4 and time
     
 while True:
 
     insert_stmt = """
     INSERT INTO soil_moisture
-    (read_ts, reading, reading_count)
+    (reading, reading_count)
     VALUES
-    ({},{},{})""".format(take_reading()[0],take_reading()[1], take_reading()[2])
+    ({},{})""".format(take_reading()[0], take_reading()[1])
 
     con = mariadb.connect(host = db_host, port = db_host_port, user = db_user, password = db_pass, database = db)
     cur = con.cursor()
