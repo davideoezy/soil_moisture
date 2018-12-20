@@ -28,50 +28,51 @@ class Relay():
         bus.write_byte_data(self.DEVICE_ADDRESS, self.DEVICE_REG_MODE1, self.DEVICE_REG_DATA)
 
     def ON_1(self):
-        print('ON_1...')
         self.DEVICE_REG_DATA &= ~(0x1 << 0)
         bus.write_byte_data(self.DEVICE_ADDRESS, self.DEVICE_REG_MODE1, self.DEVICE_REG_DATA)
 
     def OFF_1(self):
-        print('OFF_1...')
         self.DEVICE_REG_DATA |= (0x1 << 0)
         bus.write_byte_data(self.DEVICE_ADDRESS, self.DEVICE_REG_MODE1, self.DEVICE_REG_DATA)
+    
+    def ALLOFF(self):
+        self.DEVICE_REG_DATA |= (0xf << 0)
+        bus.write_byte_data(self.DEVICE_ADDRESS, self.DEVICE_REG_MODE1, self.DEVICE_REG_DATA)
 
-if __name__ == "__main__":
-    relay = Relay()
+relay = Relay()
 
     # Called on process interruption. Set all pins to "Input" default mode.
-    def endProcess(signalnum=None, handler=None):
-        relay.ALLOFF()
-        sys.exit()
+def endProcess(signalnum=None, handler=None):
+    relay.ALLOFF()
+    sys.exit()
 
 
-    signal.signal(signal.SIGINT, endProcess)
-    start_time = time.time()
-    relay.ON_1()
+signal.signal(signal.SIGINT, endProcess)
+start_time = time.time()
+relay.ON_1()
     
-    time.sleep(10)
-    relay.OFF_1()
-    end_time = time.time()
-    duration = end_time - start_time
+time.sleep(10)
+relay.OFF_1()
+end_time = time.time()
+duration = end_time - start_time
 
     
-    while True:
+while True:
 
-        insert_stmt = """
-        INSERT INTO watering
-        (duration)
-        VALUES
-        ({})""".format(duration)
+    insert_stmt = """
+    INSERT INTO watering
+    (duration)
+    VALUES
+    ({})""".format(duration)
 
-        con = mariadb.connect(host = db_host, port = db_host_port, user = db_user, password = db_pass, database = db)
-        cur = con.cursor()
-        try:
-            cur.execute(insert_stmt)
-            con.commit()
-        except:
-            con.rollback()
-        con.close()
+    con = mariadb.connect(host = db_host, port = db_host_port, user = db_user, password = db_pass, database = db)
+    cur = con.cursor()
+    try:
+        cur.execute(insert_stmt)
+        con.commit()
+    except:
+        con.rollback()
+    con.close()
 
 
 
