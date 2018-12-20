@@ -1,5 +1,5 @@
 [Unit]
-Description=BOM reader
+Description=Soil moisture reader
 After=multi-user.target
 
 [Service]
