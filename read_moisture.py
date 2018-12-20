@@ -10,7 +10,7 @@ db_host_port = '3306'
 db_user = 'rpi'
 db_pass = 'warm_me'
 db = 'soil'
-Pin = 14
+Pin = 17
 
 #Define function to measure charge time
 def RC_Analog(Pin):
