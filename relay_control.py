@@ -56,23 +56,20 @@ relay.OFF_1()
 end_time = time.time()
 duration = end_time - start_time
 
-    
-while True:
+insert_stmt = """
+INSERT INTO watering
+(duration)
+VALUES
+({})""".format(duration)
 
-    insert_stmt = """
-    INSERT INTO watering
-    (duration)
-    VALUES
-    ({})""".format(duration)
-
-    con = mariadb.connect(host = db_host, port = db_host_port, user = db_user, password = db_pass, database = db)
-    cur = con.cursor()
-    try:
-        cur.execute(insert_stmt)
-        con.commit()
-    except:
-        con.rollback()
-    con.close()
+con = mariadb.connect(host = db_host, port = db_host_port, user = db_user, password = db_pass, database = db)
+cur = con.cursor()
+try:
+    cur.execute(insert_stmt)
+    con.commit()
+except:
+    con.rollback()
+con.close()
 
 
 
