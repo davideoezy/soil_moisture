@@ -14,6 +14,7 @@ Pin = 17
 
 #Define function to measure charge time
 def RC_Analog(Pin):
+    fudgeFactor = 100
     counter=0
     start_time = time.time()
     #Discharge capacitor
@@ -25,25 +26,26 @@ def RC_Analog(Pin):
     while (GPIO.input(Pin)==GPIO.LOW):
         counter=counter+1
     end_time = time.time()
-    return end_time - start_time
+    return counter, ((end_time - start_time)-sleepTime)*fudgeFactor
 
 
     #Main program loop
 def take_reading():
     ts = time.time()
-    reading = RC_Analog(Pin) #store counts in a variable
+    reading_time = RC_Analog(Pin)[1] #store counts in a variable
+    reading_count = RC_Analog(Pin)[0]
     #counter = 0
     #time_start = 0
     #time_end = 0
-    return ts, reading  #return counts using GPIO4 and time
+    return ts, reading_time, reading_counts  #return counts using GPIO4 and time
     
 while True:
 
     insert_stmt = """
     INSERT INTO soil_moisture
-    (read_ts, reading)
+    (read_ts, reading, reading_count)
     VALUES
-    ({},{})""".format(take_reading()[0],take_reading()[1])
+    ({},{},{})""".format(take_reading()[0],take_reading()[1], take_reading()[2])
 
     con = mariadb.connect(host = db_host, port = db_host_port, user = db_user, password = db_pass, database = db)
     cur = con.cursor()
