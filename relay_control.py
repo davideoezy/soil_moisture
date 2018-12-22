@@ -1,12 +1,15 @@
-# from Seeed Studio Wiki
-# http://wiki.seeed.cc/Raspberry_Pi_Relay_Board_v1.0/
 
 import signal
 import sys
 import time
 import smbus
 import mysql.connector as mariadb
+from ftplib import FTP
+from ast import literal_eval
+import xml.etree.ElementTree as ET  
+import datetime
 
+# Set variables
 
 db_host = 'hda.amahi.net'
 db_host_port = '3306'
@@ -14,9 +17,15 @@ db_user = 'rpi'
 db_pass = 'warm_me'
 db = 'soil'
 
+BomFtpHost = "ftp2.bom.gov.au"
+BomFtpPort = 21
+BomFtpForecastPath = "/anon/gen/fwo/"
+forecast_id = "IDV10450.xml"
+
+
+# Relay control
 
 bus = smbus.SMBus(1)  # 0 = /dev/i2c-0 (port I2C0), 1 = /dev/i2c-1 (port I2C1)
-
 
 class Relay():
     global bus
@@ -48,13 +57,88 @@ def endProcess(signalnum=None, handler=None):
 
 
 signal.signal(signal.SIGINT, endProcess)
-start_time = time.time()
-relay.ON_1()
+
+# Get BOM forecast xml
+
+ftp = FTP(BomFtpHost)
+ftp.login(user='anonymous', passwd='guest')
+ftp.cwd(BomFtpForecastPath)
+
+ftp.retrbinary('RETR IDV10450.xml', open('IDV10450.xml', 'wb').write)
+
+ftp.quit()
+
+# Parse xml
+
+tree = ET.parse('IDV10450.xml')  
+root = tree.getroot()
+
+for elem in root:
+    for subelem in elem:
+        if subelem.tag == 'expiry-time':
+            expiry_time = datetime.datetime.strptime(subelem.text, '%Y-%m-%dT%H:%M:%SZ')
+        if subelem.tag == 'issue-time-utc':
+            issue_time = datetime.datetime.strptime(subelem.text, '%Y-%m-%dT%H:%M:%SZ')
+
+        
+
+forecast_up_to_date = (issue_time <= datetime.datetime.utcnow() <= expiry_time)
+
+# Get precipitation figures
+
+index_0_min_precip = 0
+index_0_prob_precip = 0
+index_1_min_precip = 0
+index_1_prob_precip = 0
+
+
+
+for elem in root:
+    if elem.tag == 'forecast':
+        for subelem in elem:
+            if(subelem.attrib['aac'] == 'VIC_PT042'):
+                for subelem2 in subelem:
+                    if(subelem2.attrib['index'] == '0'):
+                        for subelem3 in subelem2:
+                            if(subelem3.attrib['type'] == 'precipitation_range'):
+                                index_0_min_precip = float(subelem3.text.split(' ')[0])
+                            if(subelem3.attrib['type'] == 'probability_of_precipitation'):
+                                index_0_prob_precip = float((subelem3.text.replace('%','')))/100
+                    if(subelem2.attrib['index'] == '1'):
+                        for subelem3 in subelem2:
+                            if(subelem3.attrib['type'] == 'precipitation_range'):
+                                index_1_min_precip = float(subelem3.text.split(' ')[0])
+                            if(subelem3.attrib['type'] == 'probability_of_precipitation'):
+                                index_1_prob_precip = float((subelem3.text.replace('%','')))/100
+
+                
+#Watering logic
+
+hold_watering = False
+
+# Good chance of decent rain today:
+if forecast_up_to_date == True:
+    if index_0_prob_precip > 0.6 and index_0_min_precip > 5:
+        hold_watering = True
+
+# Good chance of decent rain tomorrow:
+    if index_1_prob_precip > 0.6 and index_1_min_precip > 5:
+        hold_watering = True
+
+
+# Trigger relay to run sprinkler for 30 mins
+
+if hold_watering == False:
+    start_time = time.time()
+    relay.ON_1()
     
-time.sleep(10)
-relay.OFF_1()
-end_time = time.time()
-duration = end_time - start_time
+    time.sleep(1800)
+    relay.OFF_1()
+    end_time = time.time()
+
+    duration = end_time - start_time
+
+# Add watering record to database
 
 insert_stmt = """
 INSERT INTO watering
