@@ -73,6 +73,10 @@ ftp.quit()
 tree = ET.parse('IDV10450.xml')  
 root = tree.getroot()
 
+issue_time = datetime.datetime.utcnow()
+expiry_time = datetime.datetime.utcnow()
+
+
 for elem in root:
     for subelem in elem:
         if subelem.tag == 'expiry-time':
@@ -126,7 +130,37 @@ if forecast_up_to_date == True:
         hold_watering = True
 
 
-# Trigger relay to run sprinkler for 30 mins
+# Last water
+
+query_watering = """
+SELECT
+ts,
+watered
+FROM watering
+WHERE watered = 'Y'
+ORDER BY ts ASC
+"""
+
+con = mariadb.connect(host = db_host, port = db_host_port, user = db_user, password = db_pass, database = db)
+cur = con.cursor()
+
+cur.execute(query_watering)
+
+last_water = []
+
+for row in cur:
+    last_water = row[0]
+
+def calc_time_since_water(last_water):
+    time_since_water = datetime.datetime.now() - last_water
+    time_since_water_in_s = diff.total_seconds()
+    return divmod(duration_in_s, 3600)[0]
+
+if calc_time_since_water(last_water) < 47:
+    hold_watering = True
+
+
+# If allowed, trigger relay to run sprinkler for 30 mins
 
 if hold_watering == False:
     start_time = time.time()
@@ -138,13 +172,13 @@ if hold_watering == False:
 
     duration = end_time - start_time
 
-# Add watering record to database
+# Add record to database
 
 insert_stmt = """
 INSERT INTO watering
-(duration)
+(watered, duration, forecast_current, min_precip_0, prob_precip_0, min_precip_1, prob_precip_1, hold_watering, time_since_last_water)
 VALUES
-({})""".format(duration)
+('{}',{},{},{},{},{},{},{},{})""".format(watered,duration, forecast_current, min_precip_0, prob_precip_0, min_precip_1, prob_precip_1, hold_watering, calc_time_since_water())
 
 con = mariadb.connect(host = db_host, port = db_host_port, user = db_user, password = db_pass, database = db)
 cur = con.cursor()
@@ -155,6 +189,7 @@ except:
     con.rollback()
 con.close()
 
-
-
+#_________________________________________________________#
+############# SET UP DATABASE COLUMNS #####################
+#_________________________________________________________#
 
