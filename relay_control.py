@@ -86,14 +86,14 @@ for elem in root:
 
         
 
-forecast_up_to_date = (issue_time <= datetime.datetime.utcnow() <= expiry_time)
+forecast_current = (issue_time <= datetime.datetime.utcnow() <= expiry_time)
 
 # Get precipitation figures
 
-index_0_min_precip = 0
-index_0_prob_precip = 0
-index_1_min_precip = 0
-index_1_prob_precip = 0
+min_precip_0 = 0
+prob_precip_0 = 0
+min_precip_1 = 0
+prob_precip_1 = 0
 
 
 
@@ -105,15 +105,15 @@ for elem in root:
                     if(subelem2.attrib['index'] == '0'):
                         for subelem3 in subelem2:
                             if(subelem3.attrib['type'] == 'precipitation_range'):
-                                index_0_min_precip = float(subelem3.text.split(' ')[0])
+                                min_precip_0 = float(subelem3.text.split(' ')[0])
                             if(subelem3.attrib['type'] == 'probability_of_precipitation'):
-                                index_0_prob_precip = float((subelem3.text.replace('%','')))/100
+                                prob_precip_0 = float((subelem3.text.replace('%','')))/100
                     if(subelem2.attrib['index'] == '1'):
                         for subelem3 in subelem2:
                             if(subelem3.attrib['type'] == 'precipitation_range'):
-                                index_1_min_precip = float(subelem3.text.split(' ')[0])
+                                min_precip_1 = float(subelem3.text.split(' ')[0])
                             if(subelem3.attrib['type'] == 'probability_of_precipitation'):
-                                index_1_prob_precip = float((subelem3.text.replace('%','')))/100
+                                prob_precip_1 = float((subelem3.text.replace('%','')))/100
 
                 
 #Watering logic
@@ -122,11 +122,11 @@ hold_watering = False
 
 # Good chance of decent rain today:
 if forecast_up_to_date == True:
-    if index_0_prob_precip > 0.6 and index_0_min_precip > 5:
+    if prob_precip_0 > 0.6 and min_precip_0 > 5:
         hold_watering = True
 
 # Good chance of decent rain tomorrow:
-    if index_1_prob_precip > 0.6 and index_1_min_precip > 5:
+    if prob_precip_1 > 0.6 and min_precip_1 > 5:
         hold_watering = True
 
 
@@ -153,8 +153,8 @@ for row in cur:
 
 def calc_time_since_water(last_water):
     time_since_water = datetime.datetime.now() - last_water
-    time_since_water_in_s = diff.total_seconds()
-    return divmod(duration_in_s, 3600)[0]
+    time_since_water_in_s = time_since_water.total_seconds()
+    return divmod(time_since_water_in_s, 3600)[0]
 
 if calc_time_since_water(last_water) < 47:
     hold_watering = True
