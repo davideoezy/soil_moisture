@@ -166,8 +166,8 @@ def calc_time_since_water(last_water):
     time_since_water_in_s = time_since_water.total_seconds()
     return divmod(time_since_water_in_s, 3600)[0]
 
-# if calc_time_since_water(last_water) < 47:
-#     hold_watering = True
+if calc_time_since_water(last_water) < 47:
+    hold_watering = True
 
 watered = False
 duration = 0
