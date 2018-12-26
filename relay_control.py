@@ -155,7 +155,7 @@ for row in cur:
 # last_water = datetime.datetime.now() - datetime.timedelta(days = 4)
 
 f = '%Y-%m-%d %H:%M:%S'
-last_water = datetime.datetime.strptime(last_water_sql, f)
+last_water = datetime.datetime.strptime(str(last_water_sql), f)
 
 
 # prod
