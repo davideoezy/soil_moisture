@@ -137,7 +137,7 @@ SELECT
 ts,
 watered
 FROM watering
-WHERE watered = '1'
+WHERE watered in('1', 'True')
 ORDER BY ts ASC
 """
 
