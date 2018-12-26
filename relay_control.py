@@ -146,7 +146,7 @@ cur = con.cursor()
 
 cur.execute(query_watering)
 
-last_water_sql = datetime.datetime.now()
+last_water = datetime.datetime.now()
 
 for row in cur:
 #    last_water_sql = row[0]
@@ -178,10 +178,10 @@ if hold_watering == False:
     relay.ON_1()
     
     # test
-    time.sleep(10)
+    # time.sleep(10)
     
     # prod
-    #time.sleep(1800)
+    time.sleep(1800)
     relay.OFF_1()
     end_time = time.time()
     watered = True
@@ -194,7 +194,7 @@ insert_stmt = """
 INSERT INTO watering
 (watered, duration, forecast_current, min_precip_0, prob_precip_0, min_precip_1, prob_precip_1, hold_watering, time_since_last_water)
 VALUES
-('{}',{},{},{},{},{},{},{},{})""".format(watered,duration, forecast_current, min_precip_0, prob_precip_0, min_precip_1, prob_precip_1, hold_watering, calc_time_since_water(last_water))
+({},{},{},{},{},{},{},{},{})""".format(watered,duration, forecast_current, min_precip_0, prob_precip_0, min_precip_1, prob_precip_1, hold_watering, calc_time_since_water(last_water))
 
 con = mariadb.connect(host = db_host, port = db_host_port, user = db_user, password = db_pass, database = db)
 cur = con.cursor()
