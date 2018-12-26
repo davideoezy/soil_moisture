@@ -149,10 +149,14 @@ cur.execute(query_watering)
 last_water = []
 
 for row in cur:
-    last_water = row[0]
+    last_water_sql = row[0]
 
 # test
 # last_water = datetime.datetime.now() - datetime.timedelta(days = 4)
+
+f = '%Y-%m-%d %H:%M:%S'
+last_water = datetime.datetime.strptime(last_water_sql, f)
+
 
 # prod
 
