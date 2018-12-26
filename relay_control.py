@@ -169,7 +169,7 @@ def calc_time_since_water(last_water):
 if calc_time_since_water(last_water) < 47:
     hold_watering = True
 
-
+watered = False
 # If allowed, trigger relay to run sprinkler for 30 mins
 
 if hold_watering == False:
