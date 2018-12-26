@@ -121,7 +121,7 @@ for elem in root:
 hold_watering = False
 
 # Good chance of decent rain today:
-if forecast_up_to_date == True:
+if forecast_current == True:
     if prob_precip_0 > 0.6 and min_precip_0 > 5:
         hold_watering = True
 
