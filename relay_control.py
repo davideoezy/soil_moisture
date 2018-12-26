@@ -152,7 +152,7 @@ if forecast_current == True:
 #     last_water = row[0]
 
 # test
-last_water = datetime.date.today() - datetime.timedelta(days = 4)
+last_water = datetime.datetime.now() - datetime.timedelta(days = 4)
 
 # prod
 
