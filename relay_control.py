@@ -151,16 +151,21 @@ if forecast_current == True:
 # for row in cur:
 #     last_water = row[0]
 
-# def calc_time_since_water(last_water):
-#     time_since_water = datetime.datetime.now() - last_water
-#     time_since_water_in_s = time_since_water.total_seconds()
-#     return divmod(time_since_water_in_s, 3600)[0]
+# test
+last_water = datetime.date.today() - datetime.timedelta(days = 4)
 
-# if calc_time_since_water(last_water) < 47:
-#     hold_watering = True
+# prod
+
+def calc_time_since_water(last_water):
+    time_since_water = datetime.datetime.now() - last_water
+    time_since_water_in_s = time_since_water.total_seconds()
+    return divmod(time_since_water_in_s, 3600)[0]
+
+if calc_time_since_water(last_water) < 47:
+    hold_watering = True
 
 
-# If allowed, trigger relay to run sprinkler for 30 mins
+If allowed, trigger relay to run sprinkler for 30 mins
 
 if hold_watering == False:
     start_time = time.time()
