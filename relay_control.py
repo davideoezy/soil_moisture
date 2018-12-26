@@ -166,7 +166,11 @@ if hold_watering == False:
     start_time = time.time()
     relay.ON_1()
     
-    time.sleep(1800)
+    # test
+    time.sleep(10)
+    
+    # prod
+    #time.sleep(1800)
     relay.OFF_1()
     end_time = time.time()
     watered = True
