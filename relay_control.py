@@ -188,7 +188,7 @@ insert_stmt = """
 INSERT INTO watering
 (watered, duration, forecast_current, min_precip_0, prob_precip_0, min_precip_1, prob_precip_1, hold_watering, time_since_last_water)
 VALUES
-('{}',{},{},{},{},{},{},{},{})""".format(watered,duration, forecast_current, min_precip_0, prob_precip_0, min_precip_1, prob_precip_1, hold_watering, calc_time_since_water())
+('{}',{},{},{},{},{},{},{},{})""".format(watered,duration, forecast_current, min_precip_0, prob_precip_0, min_precip_1, prob_precip_1, hold_watering, calc_time_since_water(last_water))
 
 con = mariadb.connect(host = db_host, port = db_host_port, user = db_user, password = db_pass, database = db)
 cur = con.cursor()
