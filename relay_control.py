@@ -132,32 +132,32 @@ if forecast_current == True:
 
 # Last water
 
-query_watering = """
-SELECT
-ts,
-watered
-FROM watering
-WHERE watered = 'Y'
-ORDER BY ts ASC
-"""
+# query_watering = """
+# SELECT
+# ts,
+# watered
+# FROM watering
+# WHERE watered = 'Y'
+# ORDER BY ts ASC
+# """
 
-con = mariadb.connect(host = db_host, port = db_host_port, user = db_user, password = db_pass, database = db)
-cur = con.cursor()
+# con = mariadb.connect(host = db_host, port = db_host_port, user = db_user, password = db_pass, database = db)
+# cur = con.cursor()
 
-cur.execute(query_watering)
+# cur.execute(query_watering)
 
-last_water = []
+# last_water = []
 
-for row in cur:
-    last_water = row[0]
+# for row in cur:
+#     last_water = row[0]
 
-def calc_time_since_water(last_water):
-    time_since_water = datetime.datetime.now() - last_water
-    time_since_water_in_s = time_since_water.total_seconds()
-    return divmod(time_since_water_in_s, 3600)[0]
+# def calc_time_since_water(last_water):
+#     time_since_water = datetime.datetime.now() - last_water
+#     time_since_water_in_s = time_since_water.total_seconds()
+#     return divmod(time_since_water_in_s, 3600)[0]
 
-if calc_time_since_water(last_water) < 47:
-    hold_watering = True
+# if calc_time_since_water(last_water) < 47:
+#     hold_watering = True
 
 
 # If allowed, trigger relay to run sprinkler for 30 mins
