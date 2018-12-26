@@ -146,7 +146,7 @@ cur = con.cursor()
 
 cur.execute(query_watering)
 
-last_water = []
+last_water_sql = []
 
 for row in cur:
     last_water_sql = row[0]
