@@ -132,27 +132,27 @@ if forecast_current == True:
 
 # Last water
 
-# query_watering = """
-# SELECT
-# ts,
-# watered
-# FROM watering
-# WHERE watered = 'Y'
-# ORDER BY ts ASC
-# """
+query_watering = """
+SELECT
+ts,
+watered
+FROM watering
+WHERE watered = 'Y'
+ORDER BY ts ASC
+"""
 
-# con = mariadb.connect(host = db_host, port = db_host_port, user = db_user, password = db_pass, database = db)
-# cur = con.cursor()
+con = mariadb.connect(host = db_host, port = db_host_port, user = db_user, password = db_pass, database = db)
+cur = con.cursor()
 
-# cur.execute(query_watering)
+cur.execute(query_watering)
 
-# last_water = []
+last_water = []
 
-# for row in cur:
-#     last_water = row[0]
+for row in cur:
+    last_water = row[0]
 
 # test
-last_water = datetime.datetime.now() - datetime.timedelta(days = 4)
+# last_water = datetime.datetime.now() - datetime.timedelta(days = 4)
 
 # prod
 
