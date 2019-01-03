@@ -60,75 +60,91 @@ signal.signal(signal.SIGINT, endProcess)
 
 # Get BOM forecast xml
 
+BomFtpHost = "ftp2.bom.gov.au"
+BomFtpPort = 21
+BomFtpForecastPath = "/anon/gen/fwo/"
+
+# Set some parameters
+
+index_max = 2 # 1 = rest of day, 2 = tomorrow, so on
+min_precip_threshold = 5 # mm expected
+min_precip_prob_threshold = 0.6 # % chance of rain
+
+# Location parameters
+
+# Beaumaris
+forecast_id = "IDV10450.xml" 
+location = "VIC_PT042"
+
+# Yamba
+#forecast_id = "IDN11060.xml"
+#location = 'NSW_PT161' 
+
+retrieve_string = 'RETR '+ forecast_id
+
+# Get forecast XML
+
 ftp = FTP(BomFtpHost)
 ftp.login(user='anonymous', passwd='guest')
 ftp.cwd(BomFtpForecastPath)
-
-ftp.retrbinary('RETR IDV10450.xml', open('IDV10450.xml', 'wb').write)
-
+#ftp.retrlines('LIST')   
+ftp.retrbinary(retrieve_string, open(forecast_id, 'wb').write)
 ftp.quit()
 
-# Parse xml
+# Parse XML
 
-tree = ET.parse('IDV10450.xml')  
+tree = ET.parse(forecast_id)  
 root = tree.getroot()
 
-issue_time = datetime.datetime.utcnow()
-expiry_time = datetime.datetime.utcnow()
+# Check whether forecast message is valid
 
+def convert_date(string):
+    f = '%Y-%m-%dT%H:%M:%SZ'
+    return datetime.datetime.strptime(string, f)
 
-for elem in root:
-    for subelem in elem:
-        if subelem.tag == 'expiry-time':
-            expiry_time = datetime.datetime.strptime(subelem.text, '%Y-%m-%dT%H:%M:%SZ')
-        if subelem.tag == 'issue-time-utc':
-            issue_time = datetime.datetime.strptime(subelem.text, '%Y-%m-%dT%H:%M:%SZ')
-
-        
+issue_time = convert_date(tree.findtext("amoc/issue-time-utc"))
+expiry_time = convert_date(tree.findtext("amoc/expiry-time"))
 
 forecast_current = (issue_time <= datetime.datetime.utcnow() <= expiry_time)
 
-# Get precipitation figures
+# Extract precipitation details
 
-min_precip_0 = 0
-prob_precip_0 = 0
-min_precip_1 = 0
-prob_precip_1 = 0
+def create_list(index_max):
+    list = []
+    for item in range(0,index_max):
+        list.append(0.0)
+    return list
 
+min_precip = create_list(index_max)
+prob_precip = create_list(index_max)
 
+for loc in root.iter("area"):
+    if loc.attrib['aac'] == location:
+        for child in loc:
+            for ind in range(0,index_max):
+                if child.attrib['index'] == str(ind):
+                    for gc in child:
+                        if(gc.attrib['type'] == 'precipitation_range'):
+                            min_precip[ind] = float(gc.text.split(' ')[0])
+                        if(gc.attrib['type'] == 'probability_of_precipitation'):
+                            prob_precip[ind] = float((gc.text.replace('%','')))/100
+                                         
 
-for elem in root:
-    if elem.tag == 'forecast':
-        for subelem in elem:
-            if(subelem.attrib['aac'] == 'VIC_PT042'):
-                for subelem2 in subelem:
-                    if(subelem2.attrib['index'] == '0'):
-                        for subelem3 in subelem2:
-                            if(subelem3.attrib['type'] == 'precipitation_range'):
-                                min_precip_0 = float(subelem3.text.split(' ')[0])
-                            if(subelem3.attrib['type'] == 'probability_of_precipitation'):
-                                prob_precip_0 = float((subelem3.text.replace('%','')))/100
-                    if(subelem2.attrib['index'] == '1'):
-                        for subelem3 in subelem2:
-                            if(subelem3.attrib['type'] == 'precipitation_range'):
-                                min_precip_1 = float(subelem3.text.split(' ')[0])
-                            if(subelem3.attrib['type'] == 'probability_of_precipitation'):
-                                prob_precip_1 = float((subelem3.text.replace('%','')))/100
+# Determine whether to water based on rain forecast
 
-                
-#Watering logic
+def check_forecast(min_precip, prob_precip, min_precip_threshold, min_precip_prob_threshold, index_max):
+    output = False
+    for ind in range(0,index_max):
+        if prob_precip[ind] > min_precip_prob_threshold and min_precip[ind] > min_precip_threshold:
+                output = True
+    return output
 
-hold_watering = False
+hold_watering = check_forecast(min_precip, prob_precip, min_precip_threshold, min_precip_prob_threshold, index_max)
 
-# Good chance of decent rain today:
-if forecast_current == True:
-    if prob_precip_0 > 0.6 and min_precip_0 > 5:
-        hold_watering = True
-
-# Good chance of decent rain tomorrow:
-    if prob_precip_1 > 0.6 and min_precip_1 > 5:
-        hold_watering = True
-
+min_precip_0 = min_precip[0]
+min_precip_1 = min_precip[1]
+prob_precip_0 = prob_precip[0]
+prob_precip_1 = prob_precip[1]
 
 # Last water
 
@@ -170,7 +186,7 @@ if calc_time_since_water(last_water) < 47:
     hold_watering = True
 
 watered = False
-duration = 0
+duration = 0.0
 # If allowed, trigger relay to run sprinkler for 30 mins
 
 if hold_watering == False:
