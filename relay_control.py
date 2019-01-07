@@ -17,10 +17,19 @@ db_user = 'rpi'
 db_pass = 'warm_me'
 db = 'soil'
 
-BomFtpHost = "ftp2.bom.gov.au"
-BomFtpPort = 21
-BomFtpForecastPath = "/anon/gen/fwo/"
+# Set control parameters
+
+
+index_max = 2  # 1 = rest of day, 2 = tomorrow, so on
+min_precip_threshold = 5  # mm expected
+min_precip_prob_threshold = 0.6  # % chance of rain
+min_hours_between_watering = 71
+
+# Location parameters
+
+# Beaumaris
 forecast_id = "IDV10450.xml"
+location = "VIC_PT042"
 
 
 # Relay control
@@ -65,20 +74,6 @@ BomFtpPort = 21
 BomFtpForecastPath = "/anon/gen/fwo/"
 
 # Set some parameters
-
-index_max = 2 # 1 = rest of day, 2 = tomorrow, so on
-min_precip_threshold = 5 # mm expected
-min_precip_prob_threshold = 0.6 # % chance of rain
-
-# Location parameters
-
-# Beaumaris
-forecast_id = "IDV10450.xml" 
-location = "VIC_PT042"
-
-# Yamba
-#forecast_id = "IDN11060.xml"
-#location = 'NSW_PT161' 
 
 retrieve_string = 'RETR '+ forecast_id
 
@@ -182,7 +177,7 @@ def calc_time_since_water(last_water):
     time_since_water_in_s = time_since_water.total_seconds()
     return divmod(time_since_water_in_s, 3600)[0]
 
-if calc_time_since_water(last_water) < 47:
+if calc_time_since_water(last_water) < min_hours_between_watering:
     hold_watering = True
 
 watered = False
