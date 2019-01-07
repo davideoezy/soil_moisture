@@ -23,7 +23,8 @@ db = 'soil'
 index_max = 2  # 1 = rest of day, 2 = tomorrow, so on
 min_precip_threshold = 5  # mm expected
 min_precip_prob_threshold = 0.6  # % chance of rain
-min_hours_between_watering = 71
+min_hours_between_watering = 0
+watering_duration = 10 # seconds
 
 # Location parameters
 
@@ -187,12 +188,7 @@ duration = 0.0
 if hold_watering == False:
     start_time = time.time()
     relay.ON_1()
-    
-    # test
-    # time.sleep(10)
-    
-    # prod
-    time.sleep(1800)
+    time.sleep(watering_duration)
     relay.OFF_1()
     end_time = time.time()
     watered = True
