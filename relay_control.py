@@ -23,8 +23,8 @@ db = 'soil'
 index_max = 2  # 1 = rest of day, 2 = tomorrow, so on
 min_precip_threshold = 5  # mm expected
 min_precip_prob_threshold = 0.6  # % chance of rain
-min_hours_between_watering = 0
-watering_duration = 10 # seconds
+min_hours_between_watering = 71
+watering_duration = 1200 # seconds
 
 # Location parameters
 
