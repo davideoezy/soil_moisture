@@ -8,6 +8,7 @@ from ftplib import FTP
 from ast import literal_eval
 import xml.etree.ElementTree as ET  
 import datetime
+from random import randint
 
 # Set variables
 
@@ -23,8 +24,9 @@ db = 'soil'
 index_max = 2  # 1 = rest of day, 2 = tomorrow, so on
 min_precip_threshold = 5  # mm expected
 min_precip_prob_threshold = 0.6  # % chance of rain
-min_hours_between_watering = 71
-watering_duration = 1200 # seconds
+min_hours_between_watering = 47
+watering_duration = randint(300, 1800)  # seconds. Randomly calculate time between 5 and 30 mins, to test duration options
+min_moisture_threshold = 2.5 # taken from moisture readings. Average over 12 hours
 
 # Location parameters
 
@@ -181,6 +183,29 @@ def calc_time_since_water(last_water):
 if calc_time_since_water(last_water) < min_hours_between_watering:
     hold_watering = True
 
+# check average moisture
+
+query_moisture_1 = """
+SELECT
+avg(reading)
+FROM soil_moisture
+WHERE ts > DATE_SUB(now(), INTERVAL 12 HOUR)
+"""
+
+con = mariadb.connect(host=db_host, port=db_host_port, user=db_user, password=db_pass, database=db)
+cur = con.cursor()
+
+cur.execute(query_moisture_1)
+
+for row in cur:
+    av_moisture_L12H = row[0]
+
+if av_moisture_L12H > min_moisture_threshold:
+    hold_watering = True
+
+
+# Rules to execute watering
+
 watered = False
 duration = 0.0
 # If allowed, trigger relay to run sprinkler for 30 mins
@@ -199,9 +224,9 @@ if hold_watering == False:
 
 insert_stmt = """
 INSERT INTO watering
-(watered, duration, forecast_current, min_precip_0, prob_precip_0, min_precip_1, prob_precip_1, hold_watering, time_since_last_water)
+(watered, duration, forecast_current, min_precip_0, prob_precip_0, min_precip_1, prob_precip_1, hold_watering, time_since_last_water, av_moisture_L12H)
 VALUES
-({},{},{},{},{},{},{},{},{})""".format(watered,duration, forecast_current, min_precip_0, prob_precip_0, min_precip_1, prob_precip_1, hold_watering, calc_time_since_water(last_water))
+({},{},{},{},{},{},{},{},{},{})""".format(watered, duration, forecast_current, min_precip_0, prob_precip_0, min_precip_1, prob_precip_1, hold_watering, calc_time_since_water(last_water), av_moisture_L12H)
 
 con = mariadb.connect(host = db_host, port = db_host_port, user = db_user, password = db_pass, database = db)
 cur = con.cursor()
