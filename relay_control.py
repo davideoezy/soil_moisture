@@ -26,7 +26,7 @@ min_precip_threshold = 5  # mm expected
 min_precip_prob_threshold = 0.6  # % chance of rain
 min_hours_between_watering = 47
 watering_duration = randint(300, 1800)  # seconds. Randomly calculate time between 5 and 30 mins, to test duration options
-min_moisture_threshold = 2.5 # taken from moisture readings. Average over 12 hours
+min_moisture_threshold = 3.0 # taken from moisture readings. Average over 12 hours
 
 # Location parameters
 
