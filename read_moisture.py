@@ -12,6 +12,21 @@ db_pass = 'warm_me'
 db = 'soil'
 Pin = 17
 
+
+def read_device_address():
+    try:
+        proc = subprocess.Popen(
+            ["ifconfig", wifi_interface], stdout=subprocess.PIPE, universal_newlines=True)
+        out, err = proc.communicate()
+        IP = ""
+        for line in out.split("\n"):
+            if("192.168" in line):
+                strings = line.split(" ")
+                device_address = strings[9]
+                return(device_address)
+    except:
+        return("ERROR!-ifconfig")
+
 #Define function to measure charge time
 def RC_Analog(Pin):
     fudgeFactor = 100
@@ -43,9 +58,9 @@ while True:
 
     insert_stmt = """
     INSERT INTO soil_moisture
-    (reading, reading_count)
+    (reading, reading_count, ip_address)
     VALUES
-    ({},{})""".format(take_reading()[0], take_reading()[1])
+    ({},{},'{}')""".format(take_reading()[0], take_reading()[1], read_device_address())
 
     con = mariadb.connect(host = db_host, port = db_host_port, user = db_user, password = db_pass, database = db)
     cur = con.cursor()
