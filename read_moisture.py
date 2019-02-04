@@ -1,10 +1,13 @@
 import RPi.GPIO as GPIO
 import time
 import mysql.connector as mariadb
+import subprocess
+
 GPIO.setmode(GPIO.BCM)
 
 #file = open("SensorData.txt", "w") #stores data file in same directory as this program file
 
+wifi_interface = "wlan0"
 db_host = 'hda.amahi.net'
 db_host_port = '3306'
 db_user = 'rpi'
