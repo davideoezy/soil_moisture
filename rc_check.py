@@ -2,7 +2,9 @@ import RPi.GPIO as GPIO
 import time
 GPIO.setmode(GPIO.BCM)
 
-file = open("SensorData.txt", "w") #stores data file in same directory as this program file
+#file = open("SensorData.txt", "w") #stores data file in same directory as this program file
+
+Pin = 14
 
 #Define function to measure charge time
 def RC_Analog(Pin):
@@ -24,13 +26,13 @@ def RC_Analog(Pin):
 while True:
     time.sleep(1)
     ts = time.time()
-    reading = RC_Analog(4) #store counts in a variable
+    reading = RC_Analog(Pin) #store counts in a variable
     counter = 0
     time_start = 0
     time_end = 0
     
     print ts, reading  #print counts using GPIO4 and time
-    file.write(str(ts) + " " + str(reading) + "\n") #write data to file
+    #file.write(str(ts) + " " + str(reading) + "\n") #write data to file
 
     while (reading < 10.00):
         time_start = time.time()
