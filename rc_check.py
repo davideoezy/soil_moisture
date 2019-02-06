@@ -4,7 +4,7 @@ GPIO.setmode(GPIO.BCM)
 
 #file = open("SensorData.txt", "w") #stores data file in same directory as this program file
 
-Pin = 14
+Pin = 17
 
 #Define function to measure charge time
 def RC_Analog(Pin):
