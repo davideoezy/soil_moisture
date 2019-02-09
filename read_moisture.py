@@ -1,4 +1,4 @@
-defimport time
+import time
 import mysql.connector as mariadb
 import subprocess
 
