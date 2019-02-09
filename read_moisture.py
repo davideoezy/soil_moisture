@@ -1,5 +1,4 @@
-import RPi.GPIO as GPIO
-import time
+defimport time
 import mysql.connector as mariadb
 import subprocess
 
@@ -73,6 +72,6 @@ while True:
     except:
         con.rollback()
     con.close()
-    time.sleep(600)
+    time.sleep(10) #600 for prod
 
 GPIO.cleanup()
