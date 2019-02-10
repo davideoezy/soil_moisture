@@ -4,9 +4,7 @@ import sys
 import time
 import smbus
 import mysql.connector as mariadb
-from ftplib import FTP
 from ast import literal_eval
-import xml.etree.ElementTree as ET
 import datetime
 from random import randint
 
@@ -16,7 +14,6 @@ watering_duration = randint(300, 1800)
 # seconds. Randomly calculate time between 5 and 30 mins, to test duration options
 
 time_since_rules_check = 24 # if latest rules greater than this value, execute exception process
-min_moisture_threshold = 2.5  # taken from moisture readings. Average over 12 hours
 exception_hours_between_watering = 70
 
 # Set db variables
@@ -106,24 +103,24 @@ FROM watering_records
 WHERE watered in('1', 'True')
 ORDER BY ts ASC
 """
+
+con = mariadb.connect(host=db_host, port=db_host_port,
+user=db_user, password=db_pass, database=db)
+
+cur = con.cursor()
+
+cur.execute(query_exception)
+
+hours_since_last_water = 999
+
+for row in cur:
+    hours_since_last_water = row[0]
+
 if hours_since_last_rules > time_since_rules_check:
-
-    con = mariadb.connect(host=db_host, port=db_host_port,
-    user=db_user, password=db_pass, database=db)
-
-    cur = con.cursor()
-
-    cur.execute(query_exception)
-
-    hours_since_last_water = 999
-
-    for row in cur:
-        hours_since_last_water = row[0]
-
-    hold_watering = True
-
     if hours_since_last_water > exception_hours_between_watering:
         hold_watering = False
+    else:
+        hold_watering = True
 
 
 # If allowed, trigger relay to run sprinkler for 30 mins
@@ -142,10 +139,10 @@ if hold_watering == False:
 # Add record to database
 
 insert_stmt = """
-INSERT INTO watering_records
-(watered, duration, hours_since_last_rules)
+INSERT INTO watering_log
+(watered, duration, hours_since_last_rules,  hours_since_last_water)
 VALUES
-({},{},{})""".format(watered, duration, hours_since_last_rules)
+({},{},{},{})""".format(watered, duration, hours_since_last_rules, hours_since_last_water)
 
 con = mariadb.connect(host=db_host, port=db_host_port,
                       user=db_user, password=db_pass, database=db)

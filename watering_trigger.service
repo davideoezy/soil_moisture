@@ -1,0 +1,14 @@
+[Unit]
+Description=Water lawn if rules have fired
+After=multi-user.target
+
+[Service]
+Type = idle
+ExecStart=/usr/bin/python3 -u /home/pi/git/soil_moisture/watering_trigger.py
+WorkingDirectory=/home/pi/git/soil_moisture
+StandardOutput=inherit
+StandardError=inherit
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
