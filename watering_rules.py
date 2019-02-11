@@ -46,8 +46,7 @@ retrieve_string = 'RETR ' + forecast_id
 
 def read_device_address():
     try:
-        proc = subprocess.Popen(
-            ["ifconfig", wifi_interface], stdout=subprocess.PIPE, universal_newlines=True)
+        proc = subprocess.Popen(["ifconfig", wifi_interface], stdout=subprocess.PIPE, universal_newlines=True)
         out, err = proc.communicate()
         IP = ""
         for line in out.split("\n"):
@@ -279,7 +278,7 @@ while True:
     watered_recently_override,
     moisture_override,
     hold_watering,
-    device_address)
+    ip_address)
     VALUES
     ({},{},{},{},{},{},{},{},{},{},{},{},{},{},{},'{}')""".format(
         forecast_current,
