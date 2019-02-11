@@ -8,6 +8,8 @@ from ast import literal_eval
 import xml.etree.ElementTree as ET
 import datetime
 from random import randint
+import subprocess
+
 
 # Set variables
 
@@ -16,6 +18,7 @@ db_host_port = '3306'
 db_user = 'rpi'
 db_pass = 'warm_me'
 db = 'soil'
+wifi_interface = "wlan0"
 
 # Set control parameters
 
@@ -39,6 +42,21 @@ BomFtpHost = "ftp2.bom.gov.au"
 BomFtpPort = 21
 BomFtpForecastPath = "/anon/gen/fwo/"
 retrieve_string = 'RETR ' + forecast_id
+
+
+def read_device_address():
+    try:
+        proc = subprocess.Popen(
+            ["ifconfig", wifi_interface], stdout=subprocess.PIPE, universal_newlines=True)
+        out, err = proc.communicate()
+        IP = ""
+        for line in out.split("\n"):
+            if("192.168" in line):
+                strings = line.split(" ")
+                device_address = strings[9]
+                return(device_address)
+    except:
+        return("ERROR!-ifconfig")
 
 
 def convert_date(string):
@@ -207,7 +225,6 @@ def insert_results(query, db_host, db_host_port, db_user, db_pass, db):
 
 
 while True:
-
     # Get data
     get_forecast()
     tree = parse_xml(forecast_id)
@@ -261,9 +278,10 @@ while True:
     rain_override,
     watered_recently_override,
     moisture_override,
-    hold_watering)
+    hold_watering,
+    device_address)
     VALUES
-    ({},{},{},{},{},{},{},{},{},{},{},{},{},{},{})""".format(
+    ({},{},{},{},{},{},{},{},{},{},{},{},{},{},{},'{}')""".format(
         forecast_current,
         min_precip_0,
         prob_precip_0,
@@ -278,7 +296,8 @@ while True:
         rain_override,
         watered_recently_override,
         moisture_override,
-        hold_watering
+        hold_watering,
+        read_device_address()
     )
 
     insert_results(insert_stmt, db_host, db_host_port, db_user, db_pass, db)
