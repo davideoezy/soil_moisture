@@ -112,7 +112,7 @@ def get_min_precip(index_max, tree):
                     if child.attrib['index'] == str(ind):
                         for gc in child:
                             if(gc.attrib['type'] == 'precipitation_range'):
-                                min_precip[ind] = float(gc.text.split(' ')[0])
+                                min_precip[ind] = np.mean([float(gc.text.split(' ')[0]), float(gc.text.split(' ')[2])])
 
     return min_precip
 
