@@ -79,7 +79,7 @@ query_rules = """
 SELECT
 hold_watering,
 TIMESTAMPDIFF(hour,ts,NOW())
-FROM watering
+FROM watering_rules
 order by ts
 """
 
