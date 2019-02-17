@@ -26,7 +26,7 @@ db = 'soil'
 
 # Initialise variables
 
-hold_watering == True
+hold_watering = True
 hours_since_last_rules = 999
 watered = False
 duration = 0.0
