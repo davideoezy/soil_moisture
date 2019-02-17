@@ -9,6 +9,7 @@ import xml.etree.ElementTree as ET
 import datetime
 from random import randint
 import subprocess
+import numpy as np
 
 
 # Set variables
