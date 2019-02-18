@@ -90,7 +90,7 @@ cur = con.cursor()
 cur.execute(query_rules)
 
 for row in cur:
-    hold_watering = bool(row[0])
+    hold_watering = bool(int(row[0]))
     hours_since_last_rules = row[1]
 
 # Exception
