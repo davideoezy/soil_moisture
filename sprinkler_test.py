@@ -49,5 +49,5 @@ def endProcess(signalnum=None, handler=None):
 signal.signal(signal.SIGINT, endProcess)
 
 relay.ON_1()
-time.sleep(1200)
+time.sleep(30)
 relay.OFF_1()
