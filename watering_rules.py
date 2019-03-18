@@ -19,7 +19,8 @@ db_host_port = '3306'
 db_user = 'rpi'
 db_pass = 'warm_me'
 db = 'soil'
-wifi_interface = "wlan0"
+#wifi_interface = "wlan0"
+wifi_interface = "wlp59s0"
 
 # Set control parameters
 
@@ -45,18 +46,22 @@ BomFtpForecastPath = "/anon/gen/fwo/"
 retrieve_string = 'RETR ' + forecast_id
 
 
+# def read_device_address():
+#     try:
+#         proc = subprocess.Popen(["ip", "a"], stdout=subprocess.PIPE, universal_newlines=True)
+#         out, err = proc.communicate()
+#         IP = ""
+#         for line in out.split("\n"):
+#             if("192.168" in line):
+#                 strings = line.split(" ")
+#                 full_device_address = strings[5]
+#                 device_address = full_device_address[:-3]
+#                 return(device_address)
+#     except:
+#         return("ERROR!-ifconfig")
+
 def read_device_address():
-    try:
-        proc = subprocess.Popen(["ifconfig", wifi_interface], stdout=subprocess.PIPE, universal_newlines=True)
-        out, err = proc.communicate()
-        IP = ""
-        for line in out.split("\n"):
-            if("192.168" in line):
-                strings = line.split(" ")
-                device_address = strings[9]
-                return(device_address)
-    except:
-        return("ERROR!-ifconfig")
+    return("")
 
 
 def convert_date(string):
