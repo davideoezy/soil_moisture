@@ -1,0 +1,11 @@
+mysql.connector==2.1.6
+numpy
+# signal
+# sys
+# time
+# ftplib
+# ast
+# xml.etree.ElementTree
+datetime
+# random
+# subprocess
