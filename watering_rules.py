@@ -160,6 +160,8 @@ def get_db_data(query, host, port, user, passwd, db):
     cur = con.cursor()
     cur.execute(query)
 
+    output = 999
+    
     for row in cur:
         output = row[0]
 
