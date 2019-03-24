@@ -99,7 +99,7 @@ query_exception = """
 SELECT
 TIMESTAMPDIFF(hour, ts, NOW()),
 watered
-FROM watering_records
+FROM watering_log
 WHERE watered in('1', 'True')
 ORDER BY ts ASC
 """
