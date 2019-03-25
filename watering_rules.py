@@ -14,7 +14,7 @@ import numpy as np
 
 # Set variables
 
-db_host = 'hda.amahi.net'
+db_host = '192.168.0.10'
 db_host_port = '3306'
 db_user = 'rpi'
 db_pass = 'warm_me'
