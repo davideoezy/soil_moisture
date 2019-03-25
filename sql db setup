@@ -1,0 +1,34 @@
+
+create database soil;
+use soil;
+
+create table soil_moisture (
+reading float, 
+reading_count int, 
+ip_address varchar(15))
+
+create table watering_rules (
+forecast_current int,
+min_precip_0 float,
+prob_precip_0 float,
+min_precip_1 float,
+prob_precip_1 float,
+min_precip_threshold int,
+min_precip_prob_threshold float,
+time_since_last_water float,
+min_hours_between_watering int,
+av_moisture_L12H float,
+min_moisture_threshold float,
+rain_override int,
+watered_recently_override int,
+moisture_override int,
+hold_watering int,
+ip_address varchar(15));
+
+create table watering_log (
+watered int, 
+duration float, 
+hours_since_last_rules float,  
+hours_since_last_water float);
+
+GRANT ALL PRIVILEGES ON soil.* TO 'rpi'@'%' identified by 'warm_me';
