@@ -100,7 +100,7 @@ SELECT
 TIMESTAMPDIFF(hour, ts, NOW()),
 watered
 FROM watering_log
-WHERE watered in('1', 'True')
+WHERE watered = 1
 ORDER BY ts ASC
 """
 
