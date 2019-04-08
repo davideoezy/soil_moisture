@@ -9,6 +9,7 @@ WorkingDirectory=/home/pi/git/soil_moisture
 StandardOutput=inherit
 StandardError=inherit
 Restart=on-failure
+RestartSec=5
 
 [Install]
 WantedBy=multi-user.target
