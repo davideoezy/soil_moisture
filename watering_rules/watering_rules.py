@@ -26,10 +26,10 @@ wifi_interface = "wlp59s0"
 
 
 index_max = 2  # 1 = rest of day, 2 = tomorrow, so on
-min_precip_threshold = 5  # mm expected
+min_precip_threshold = 3  # mm expected
 min_precip_prob_threshold = 0.6  # % chance of rain
 min_hours_between_watering = 47
-min_moisture_threshold = 3.0  # taken from moisture readings. Average over 12 hours
+min_moisture_threshold = 2.5  # taken from moisture readings. Average over 12 hours
 
 # Location parameters
 
