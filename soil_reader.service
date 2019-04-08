@@ -3,12 +3,12 @@ Description=Soil moisture reader
 After=multi-user.target
 
 [Service]
-Type = idle
+Type = simple
 ExecStart=/usr/bin/python3 -u /home/pi/git/soil_moisture/read_moisture.py
 WorkingDirectory=/home/pi/git/soil_moisture
 StandardOutput=inherit
 StandardError=inherit
-Restart=always
+Restart=on-failure
 
 [Install]
 WantedBy=multi-user.target
