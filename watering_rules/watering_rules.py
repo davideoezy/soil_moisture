@@ -7,15 +7,11 @@ from rules import rules
 from weather_forecast import weather_forecast
 
 
-
+weather_forecast = weather_forecast()
+db_helper = db_helper()
+rules = rules()
 
 while True:
-
-    # reset classes to allow initialised vars to be changed without restart
-
-    weather_forecast = weather_forecast()
-    db_helper = db_helper()
-    rules = rules()
 
     # Get data
     weather_forecast.get_forecast()
