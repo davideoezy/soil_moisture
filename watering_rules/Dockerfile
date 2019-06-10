@@ -6,5 +6,5 @@ ENV TZ=Australia/Melbourne
 RUN pip install --upgrade pip
 RUN pip install -r requirements.txt 
 WORKDIR /.
-ADD watering_rules.py /
+COPY . /
 CMD [ "python", "./watering_rules.py" ]
