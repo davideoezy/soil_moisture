@@ -54,7 +54,7 @@ while True:
     INSERT INTO soil_moisture
     (reading, reading_count, ip_address)
     VALUES
-    ({},{},'{}')""".format(reading[0], reading[1], read_device_address())
+    ({},{},'{}')""".format(reading[1], reading[0], read_device_address())
 
     db_helper.insert_data(insert_stmt)
 
