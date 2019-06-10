@@ -2,119 +2,46 @@
 import signal
 import sys
 import time
-import smbus
-import mysql.connector as mariadb
-from ast import literal_eval
-import datetime
 from random import randint
 
-# Set control parameters
+from relay import Relay
+from db_helper import db_helper
 
-watering_duration = randint(300, 1800)
-# seconds. Randomly calculate time between 5 and 30 mins, to test duration options
-
-time_since_rules_check = 24 # if latest rules greater than this value, execute exception process
-exception_hours_between_watering = 70
-
-# Set db variables
-
-db_host = 'hda.amahi.net'
-db_host_port = '3306'
-db_user = 'rpi'
-db_pass = 'warm_me'
-db = 'soil'
+relay = Relay()
+db_helper = db_helper()
 
 # Initialise variables
 
 hold_watering = True
-hours_since_last_rules = 999
 watered = False
-duration = 0.0
-
-# Relay control
-
-bus = smbus.SMBus(1)  # 0 = /dev/i2c-0 (port I2C0), 1 = /dev/i2c-1 (port I2C1)
+duration = 0
+relay.initialise_relay()
 
 
-class Relay():
-    global bus
+# Set control parameters
 
-    def __init__(self):
-        # 7 bit address (will be left shifted to add the read write bit)
-        self.DEVICE_ADDRESS = 0x20
-        self.DEVICE_REG_MODE1 = 0x06
-        self.DEVICE_REG_DATA = 0xff
-        bus.write_byte_data(self.DEVICE_ADDRESS,
-                            self.DEVICE_REG_MODE1, self.DEVICE_REG_DATA)
-
-    def ON_1(self):
-        self.DEVICE_REG_DATA &= ~(0x1 << 0)
-        bus.write_byte_data(self.DEVICE_ADDRESS,
-                            self.DEVICE_REG_MODE1, self.DEVICE_REG_DATA)
-
-    def OFF_1(self):
-        self.DEVICE_REG_DATA |= (0x1 << 0)
-        bus.write_byte_data(self.DEVICE_ADDRESS,
-                            self.DEVICE_REG_MODE1, self.DEVICE_REG_DATA)
-
-    def ALLOFF(self):
-        self.DEVICE_REG_DATA |= (0xf << 0)
-        bus.write_byte_data(self.DEVICE_ADDRESS,
-                            self.DEVICE_REG_MODE1, self.DEVICE_REG_DATA)
+parameters = db_helper.get_parameters()
+min_duration = parameters[0]
+max_duration = parameters[1]
+time_since_rules_check = 24 # if latest rules greater than this value, execute exception process
+exception_hours_between_watering = parameters[2]
 
 
-relay = Relay()
+watering_duration = randint(min_duration, max_duration)
+# seconds. Randomly calculate time between 5 and 30 mins, to test duration options
+
 
 # Called on process interruption. Set all pins to "Input" default mode.
 
+watering_check = db_helper.hold_water_check()
 
-def endProcess(signalnum=None, handler=None):
-    relay.ALLOFF()
-    sys.exit()
+hold_watering = bool(int(watering_check[0]))
+hours_since_last_rules = watering_check[1]
 
-
-signal.signal(signal.SIGINT, endProcess)
-
-query_rules = """
-SELECT
-hold_watering,
-TIMESTAMPDIFF(hour,ts,NOW())
-FROM watering_rules
-order by ts
-"""
-
-con = mariadb.connect(host=db_host, port=db_host_port,
-                      user=db_user, password=db_pass, database=db)
-cur = con.cursor()
-
-cur.execute(query_rules)
-
-for row in cur:
-    hold_watering = bool(int(row[0]))
-    hours_since_last_rules = row[1]
 
 # Exception
 
-query_exception = """
-SELECT
-TIMESTAMPDIFF(hour, ts, NOW()),
-watered
-FROM watering_log
-WHERE watered = 1
-ORDER BY ts ASC
-"""
-
-con = mariadb.connect(host=db_host, port=db_host_port,
-user=db_user, password=db_pass, database=db)
-
-cur = con.cursor()
-
-cur.execute(query_exception)
-
-hours_since_last_water = 999
-
-for row in cur:
-    hours_since_last_water = row[0]
+hours_since_last_water = db_helper.get_watered()
 
 if hours_since_last_rules > time_since_rules_check:
     if hours_since_last_water > exception_hours_between_watering:
@@ -144,12 +71,4 @@ INSERT INTO watering_log
 VALUES
 ({},{},{},{})""".format(watered, duration, hours_since_last_rules, hours_since_last_water)
 
-con = mariadb.connect(host=db_host, port=db_host_port,
-                      user=db_user, password=db_pass, database=db)
-cur = con.cursor()
-try:
-    cur.execute(insert_stmt)
-    con.commit()
-except:
-    con.rollback()
-con.close()
+db_helper.insert_data(insert_stmt)

@@ -2,17 +2,13 @@ import RPi.GPIO as GPIO
 import time
 import mysql.connector as mariadb
 import subprocess
+from db_helper import db_helper
+
+db_helper = db_helper()
 
 GPIO.setmode(GPIO.BCM)
 
-#file = open("SensorData.txt", "w") #stores data file in same directory as this program file
-
 wifi_interface = "wlan0"
-db_host = 'hda.amahi.net'
-db_host_port = '3306'
-db_user = 'rpi'
-db_pass = 'warm_me'
-db = 'soil'
 Pin = 17
 
 
@@ -49,30 +45,19 @@ def RC_Analog(Pin):
 
 
     #Main program loop
-def take_reading():
-    reading_time = RC_Analog(Pin)[1] #store counts in a variable
-    reading_count = RC_Analog(Pin)[0]
-    #counter = 0
-    #time_start = 0
-    #time_end = 0
-    return reading_time, reading_count  #return counts using GPIO4 and time
-    
+
 while True:
+
+    reading = RC_Analog(Pin)
 
     insert_stmt = """
     INSERT INTO soil_moisture
     (reading, reading_count, ip_address)
     VALUES
-    ({},{},'{}')""".format(take_reading()[0], take_reading()[1], read_device_address())
+    ({},{},'{}')""".format(reading[0], reading[1], read_device_address())
 
-    con = mariadb.connect(host = db_host, port = db_host_port, user = db_user, password = db_pass, database = db)
-    cur = con.cursor()
-    try:
-        cur.execute(insert_stmt)
-        con.commit()
-    except:
-        con.rollback()
-    con.close()
+    db_helper.insert_data(insert_stmt)
+
     time.sleep(600) #600 for prod
 
-GPIO.cleanup()
+    GPIO.cleanup()

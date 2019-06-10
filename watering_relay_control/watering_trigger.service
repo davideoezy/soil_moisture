@@ -4,8 +4,8 @@ After=multi-user.target
 
 [Service]
 Type = idle
-ExecStart=/usr/bin/python3 -u /home/pi/git/soil_moisture/watering_trigger.py
-WorkingDirectory=/home/pi/git/soil_moisture
+ExecStart=/usr/bin/python3 -u /home/pi/git/soil_moisture/watering_relay_control/watering_trigger.py
+WorkingDirectory=/home/pi/git/soil_moisture/watering_relay_control
 StandardOutput=inherit
 StandardError=inherit
 Restart=always
