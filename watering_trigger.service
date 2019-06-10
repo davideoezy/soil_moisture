@@ -1,15 +1,14 @@
 [Unit]
-Description=Soil moisture reader
+Description=Water lawn if rules have fired
 After=multi-user.target
 
 [Service]
-Type = simple
-ExecStart=/usr/bin/python3 -u /home/pi/git/soil_moisture/read_moisture.py
+Type = idle
+ExecStart=/usr/bin/python3 -u /home/pi/git/soil_moisture/watering_trigger.py
 WorkingDirectory=/home/pi/git/soil_moisture
 StandardOutput=inherit
 StandardError=inherit
-Restart=on-failure
-RestartSec=5
+Restart=always
 
 [Install]
 WantedBy=multi-user.target

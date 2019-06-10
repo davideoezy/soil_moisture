@@ -1,14 +1,7 @@
 
-#import signal
-#import sys
+
+
 import time
-# from ftplib import FTP
-# from ast import literal_eval
-# import xml.etree.ElementTree as ET
-#import datetime
-#from random import randint
-#import subprocess
-#import numpy as np
 from db_helper import db_helper
 from rules import rules
 from weather_forecast import weather_forecast
@@ -100,6 +93,5 @@ while True:
     db_helper.insert_data(insert_stmt)
 
     time.sleep(10800)
-
 
 
