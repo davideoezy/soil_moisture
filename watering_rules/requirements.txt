@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 mysql-connector-python
 numpy
 # signal
@@ -9,3 +10,8 @@ numpy
 datetime
 # random
 # subprocess
+=======
+mysql.connector
+numpy
+datetime
+>>>>>>> v2.0
