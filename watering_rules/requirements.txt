@@ -1,17 +1,3 @@
-<<<<<<< HEAD
-mysql-connector-python
-numpy
-# signal
-# sys
-# time
-# ftplib
-# ast
-# xml.etree.ElementTree
-datetime
-# random
-# subprocess
-=======
 mysql.connector
 numpy
 datetime
->>>>>>> v2.0
