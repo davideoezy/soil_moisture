@@ -3,7 +3,6 @@ import signal
 import sys
 import time
 from random import randint
-
 from relay import Relay
 from db_helper import db_helper
 

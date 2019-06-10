@@ -4,7 +4,7 @@ After=multi-user.target
 
 [Service]
 Type = simple
-ExecStart=/usr/bin/python3 -u /home/pi/git/soil_moisture/read_moisture.py
+ExecStart=/usr/bin/python3 -u /home/pi/git/soil_moisture/watering_relay_control/read_moisture.py
 WorkingDirectory=/home/pi/git/soil_moisture
 StandardOutput=inherit
 StandardError=inherit
