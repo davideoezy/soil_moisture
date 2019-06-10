@@ -6,10 +6,10 @@ db_helper = db_helper()
 class rules():
     def __init__(self):
         self.parms = db_helper.get_parameters()
-        self.min_precip_threshold = parms[0]  # mm expected
-        self.min_precip_prob_threshold = parms[1]  # % chance of rain
-        self.min_hours_between_watering = parms[2]
-        self.min_moisture_threshold = parms[3]  # taken from moisture readings. Average over 12 hours
+        self.min_precip_threshold = self.parms[0]  # mm expected
+        self.min_precip_prob_threshold = self.parms[1]  # % chance of rain
+        self.min_hours_between_watering = self.parms[2]
+        self.min_moisture_threshold = self.parms[3]  # taken from moisture readings. Average over 12 hours
         self.index_max = 2
 
 
