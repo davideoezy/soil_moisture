@@ -36,5 +36,5 @@ class Relay():
         sys.exit()
 
     def initialise_relay(self):
-        signal.signal(signal.SIGINT, self.endProcess())
+        signal.signal(signal.SIGINT, self.endProcess)
 
