@@ -16,15 +16,15 @@ watered = False
 duration = 0
 
 
-def endProcess(signalnum=None, handler=None):
-    relay.ALLOFF()
-    sys.exit()
+# def endProcess(signalnum=None, handler=None):
+#     relay.ALLOFF()
+#     sys.exit()
 
 
-signal.signal(signal.SIGINT, endProcess)
+# signal.signal(signal.SIGINT, endProcess)
 
 #signal.signal(signal.SIGINT, relay.endProcess())
-#relay.initialise_relay()
+relay.initialise_relay()
 
 
 # Set control parameters
