@@ -14,7 +14,16 @@ db_helper = db_helper()
 hold_watering = True
 watered = False
 duration = 0
-signal.signal(signal.SIGINT, relay.endProcess())
+
+
+def endProcess(signalnum=None, handler=None):
+    relay.ALLOFF()
+    sys.exit()
+
+
+signal.signal(signal.SIGINT, endProcess)
+
+#signal.signal(signal.SIGINT, relay.endProcess())
 #relay.initialise_relay()
 
 
