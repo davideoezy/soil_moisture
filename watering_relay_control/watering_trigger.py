@@ -14,7 +14,8 @@ db_helper = db_helper()
 hold_watering = True
 watered = False
 duration = 0
-relay.initialise_relay()
+signal.signal(signal.SIGINT, relay.endProcess())
+#relay.initialise_relay()
 
 
 # Set control parameters
@@ -58,7 +59,6 @@ if hold_watering == False:
     relay.OFF_1()
     end_time = time.time()
     watered = True
-
     duration = end_time - start_time
 
 

@@ -42,7 +42,7 @@ class db_helper():
         statement = """
                 select min_duration,
                 max_duration,
-                hours_btw_watering
+                min_hours_between_watering
                 from watering_params
                 order by ts desc
                 limit 1 
