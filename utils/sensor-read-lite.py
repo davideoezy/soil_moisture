@@ -28,6 +28,10 @@ def RC_Analog(Pin):
 
 while True:
 
+    GPIO.setmode(GPIO.BCM)
+
+    Pin = 17
+
     reading = RC_Analog(Pin)
 
     print(reading)
