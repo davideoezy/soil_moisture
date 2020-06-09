@@ -1,4 +1,4 @@
-import RPi.GPIO as GPIO
+from DFRobot.DFRobot_ADS1115 import ADS1115
 import time
 import mysql.connector as mariadb
 import subprocess
@@ -6,10 +6,15 @@ from db_helper import db_helper
 
 db_helper = db_helper()
 
-GPIO.setmode(GPIO.BCM)
-
 wifi_interface = "wlan0"
-Pin = 17
+
+ADS1115_REG_CONFIG_PGA_6_144V        = 0x00 # 6.144V range = Gain 2/3
+ADS1115_REG_CONFIG_PGA_4_096V        = 0x02 # 4.096V range = Gain 1
+ADS1115_REG_CONFIG_PGA_2_048V        = 0x04 # 2.048V range = Gain 2 (default)
+ADS1115_REG_CONFIG_PGA_1_024V        = 0x06 # 1.024V range = Gain 4
+ADS1115_REG_CONFIG_PGA_0_512V        = 0x08 # 0.512V range = Gain 8
+ADS1115_REG_CONFIG_PGA_0_256V        = 0x0A # 0.256V range = Gain 16
+ads1115 = ADS1115()
 
 
 def read_device_address():
@@ -26,38 +31,26 @@ def read_device_address():
     except:
         return("ERROR!-ifconfig")
 
-#Define function to measure charge time
-def RC_Analog(Pin):
-    fudgeFactor = 100
-    sleepTime = 0.1 # in seconds
-    counter=0
-    start_time = time.time()
-    #Discharge capacitor
-    GPIO.setup(Pin, GPIO.OUT)
-    GPIO.output(Pin, GPIO.LOW)
-    time.sleep(sleepTime) #in seconds, suspends execution.
-    GPIO.setup(Pin, GPIO.IN)
-#Count loops until voltage across capacitor reads high on GPIO
-    while (GPIO.input(Pin)==GPIO.LOW):
-        counter=counter+1
-    end_time = time.time()
-    return counter, ((end_time - start_time)-sleepTime)*fudgeFactor
-
-
     #Main program loop
 
 while True:
 
-    reading = RC_Analog(Pin)
+    #Set the IIC address
+    ads1115.setAddr_ADS1115(0x49)
+    #Sets the gain and input voltage range.
+    ads1115.setGain(ADS1115_REG_CONFIG_PGA_6_144V)
+    #Get the Digital Value of Analog of selected channel
+    df_reading = ads1115.readVoltage(0)
+    time.sleep(0.2)
+    vegetronix = ads1115.readVoltage(1)
 
     insert_stmt = """
-    INSERT INTO soil_moisture
-    (reading, reading_count, ip_address)
+    INSERT INTO soil_moisture_adc
+    (df_reading, vegetronix, ip_address)
     VALUES
-    ({},{},'{}')""".format(reading[1], reading[0], read_device_address())
+    ({},{},'{}')""".format(df_reading, vegetronix, read_device_address())
 
     db_helper.insert_data(insert_stmt)
 
     time.sleep(600) #600 for prod
 
-    GPIO.cleanup()
