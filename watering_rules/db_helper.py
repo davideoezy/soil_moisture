@@ -73,8 +73,8 @@ class db_helper():
 
         statement = """
                 SELECT
-                avg(reading)
-                FROM soil_moisture
+                avg(df_reading)
+                FROM soil_moisture_adc
                 WHERE ts > DATE_SUB(now(), INTERVAL 12 HOUR)
                 """
         n_variables = 1
