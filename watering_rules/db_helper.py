@@ -75,7 +75,7 @@ class db_helper():
                 SELECT
                 avg(vegetronix)
                 FROM soil_moisture_adc
-                WHERE ts > DATE_SUB(now(), INTERVAL 12 HOUR)
+                WHERE ts > DATE_SUB(now(), INTERVAL 1 HOUR)
                 """
         n_variables = 1
         default = 999
