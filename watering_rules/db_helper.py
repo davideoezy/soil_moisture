@@ -73,7 +73,7 @@ class db_helper():
 
         statement = """
                 SELECT
-                avg(df_reading)
+                avg(vegetronix)
                 FROM soil_moisture_adc
                 WHERE ts > DATE_SUB(now(), INTERVAL 12 HOUR)
                 """
