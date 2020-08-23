@@ -13,6 +13,8 @@ rules = rules()
 
 while True:
 
+    av_moisture_L12H = 9999
+
     # Get data
     weather_forecast.get_forecast()
 
