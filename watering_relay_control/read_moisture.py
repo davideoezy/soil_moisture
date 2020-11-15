@@ -40,17 +40,26 @@ while True:
     #Sets the gain and input voltage range.
     ads1115.setGain(ADS1115_REG_CONFIG_PGA_6_144V)
     #Get the Digital Value of Analog of selected channel
-    df_reading = ads1115.readVoltage(0)
+    df_pipe_reading = ads1115.readVoltage(0)
     time.sleep(0.2)
-    vegetronix = ads1115.readVoltage(1)
+    df_tape_reading = ads1115.readVoltage(1)
+    time.sleep(0.2)
+    vegetronix = ads1115.readVoltage(2)
+    time.sleep(0.2)
+
+    # insert_stmt = """
+    # INSERT INTO soil_moisture_adc
+    # (df_reading, vegetronix, ip_address)
+    # VALUES
+    # ({},{},'{}')""".format(df_reading.get('r'), vegetronix.get('r'), read_device_address())
 
     insert_stmt = """
     INSERT INTO soil_moisture_adc
-    (df_reading, vegetronix, ip_address)
+    (df_pipe_reading, df_tape_reading, vegetronix, ip_address)
     VALUES
-    ({},{},'{}')""".format(df_reading.get('r'), vegetronix.get('r'), read_device_address())
+    ({},{},'{}')""".format(df_pipe_reading.get('r'), df_tape_reading.get('r'), vegetronix.get('r'), read_device_address())
 
     db_helper.insert_data(insert_stmt)
 
-    time.sleep(600) #600 for prod
+    time.sleep(300) #600 for prod
 
