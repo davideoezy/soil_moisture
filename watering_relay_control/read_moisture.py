@@ -57,7 +57,7 @@ while True:
     INSERT INTO soil_moisture_adc
     (df_pipe_reading, df_tape_reading, vegetronix, ip_address)
     VALUES
-    ({},{},'{}')""".format(df_pipe_reading.get('r'), df_tape_reading.get('r'), vegetronix.get('r'), read_device_address())
+    ({},{},{},'{}')""".format(df_pipe_reading.get('r'), df_tape_reading.get('r'), vegetronix.get('r'), read_device_address())
 
     db_helper.insert_data(insert_stmt)
 
